@@ -1,0 +1,26 @@
+import { Prisma, PrismaClient } from "../../generated/prisma/client";
+import { ShardId } from "../types/shared-types";
+import { getPrismaClient } from "./prisma-client";
+
+
+export class ConnectionManager {
+
+// get prisma client for specific shard ( for transactional operations)
+    static getClient(shardId:ShardId) : PrismaClient{
+        return getPrismaClient(shardId);
+
+    }
+
+    async executeTransaction<T>(shardId:ShardId , fn:(tx: Prisma.TransactionClient) => Promise<T>):Promise<T>{
+        const client = getPrismaClient(shardId)
+
+        return await client.$transaction(fn, {
+            isolationLevel : Prisma.TransactionIsolationLevel.RepeatableRead
+        });
+    }
+}
+
+export const connectionManager = new ConnectionManager();
+
+
+// Repeatable read : while we are inside a transaction we are guaranted to see the same data across all reads.
