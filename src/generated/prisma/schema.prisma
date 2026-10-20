@@ -21,13 +21,13 @@ enum LedgerType {
 
 model Wallet {
   id         BigInt   @id @default(autoincrement()) @db.BigInt
-  userId     BigInt   @unique @db.BigInt
+  user_id    BigInt   @unique @db.BigInt
   balance    BigInt   @default(0) @db.BigInt
   version    Int      @default(0)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  @@index([userId], name: "idx__user_id")
+  @@index([user_id], name: "idx__user_id")
   @@map("wallets")
 }
 
